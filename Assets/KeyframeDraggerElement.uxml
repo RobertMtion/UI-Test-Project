@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/KeyframeStyle.uss?fileID=7433441132597879392&amp;guid=a8c23b94992887a48b262cd6c2f9316b&amp;type=3#KeyframeDraggerElementUSS" />
+    <KeyframeDraggerElement />
+</ui:UXML>

@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Keyframe/KeyframeElementUSS.uss?fileID=7433441132597879392&amp;guid=2e53ee8fd8387784398da0f8ffceae29&amp;type=3#KeyframeElementUSS" />
+    <KeyframeElement />
+</ui:UXML>
