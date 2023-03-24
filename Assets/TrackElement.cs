@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class KeyframeElement : VisualElement
+public class TrackElement : VisualElement
 {
-    private VisualElement dragger = null;
-
-    public KeyframeElement()
+    public TrackElement()
     {
-        AddToClassList("keyframe-element");
+        AddToClassList("timeline-track");
     }
 
     public void SetSelected(bool selected)

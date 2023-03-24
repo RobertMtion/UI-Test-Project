@@ -9,9 +9,9 @@ public class DragManipulator : Clickable
 
     public bool Dragging => dragging;
     public Vector2 MouseStartPosition => mouseStartPosition;
-    public Vector2 MouseMovementDelta => (lastMousePosition - mouseStartPosition);
+    public Vector2 MouseMovementDelta => lastMousePosition - mouseStartPosition;
 
-    public DragManipulator(System.Action clickHandler, System.Action dragHandler) : base(clickHandler, 0, 10)
+    public DragManipulator(System.Action clickHandler, System.Action dragHandler) : base(clickHandler, 0, 20)
     {
         onDrag = dragHandler;
     }
@@ -21,6 +21,11 @@ public class DragManipulator : Clickable
         dragging = false;
         mouseStartPosition = localPosition;
         base.ProcessDownEvent(evt, localPosition, pointerId);
+    }
+
+    protected override void ProcessUpEvent(EventBase evt, Vector2 localPosition, int pointerId)
+    {
+        base.ProcessUpEvent(evt, localPosition, pointerId);
     }
 
     protected override void ProcessMoveEvent(EventBase evt, Vector2 localPosition)

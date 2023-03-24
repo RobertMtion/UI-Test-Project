@@ -1,15 +1,36 @@
-.main-bar {
-	background-color: yellow;
-	height: 25px;
+.timeline-main-bar {
+	background-color: rgb(64, 64, 64);
+	height: auto;
 	width: 700px;
-	align-items: flex-start;
+	flex-direction: column;
+	flex-wrap: wrap;
 	align-content: flex-start;
+	align-items: flex-start;
+	justify-content: flex-start;
 }
 
-.main-dragger {
-	width: 25px;
-	height: 25px;
-	background-color: blue;
+.timeline-track {
+	height: 30px;
+	width: 100%;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	background-color: rgb(96, 96, 96);
+}
+
+.timeline-track.selected {
+	background-color: yellow;
+}
+
+.keyframe-element {
+	background-color: rgb(164, 164, 164);
+	width: 20px;
+	height: 20px;
+	margin-top: 2.5px;
 	border-radius: 5px;
-	top: 0;
+	overflow: visible;
+}
+
+.keyframe-element.selected {
+	border-width: 2px;
+	border-color: rgb(255, 0, 0);
 }
