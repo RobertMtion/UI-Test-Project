@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 public class TimelineElement : VisualElement
 {
     private VisualElement mainBar = null;
+    private VisualElement timelineIndicatorContainer = null;
     private TrackElement currentlySelectedTrackElement = null;
     List<TrackElement> trackElements = new List<TrackElement>();
     private KeyframeElement currentlySelectedKeyframe = null;
@@ -24,6 +25,28 @@ public class TimelineElement : VisualElement
         mainBar = new VisualElement();
         mainBar.AddToClassList("timeline-main-bar");
         Add(mainBar);
+
+        // Timeline indicators
+        timelineIndicatorContainer = new VisualElement();
+        timelineIndicatorContainer.AddToClassList("timeline-indicator-container");
+        mainBar.Add(timelineIndicatorContainer);
+        for (int i = 0; i < 100; ++i)
+        {
+            var verticalBar = new VisualElement();
+            verticalBar.AddToClassList("timeline-indicator");
+            if (i % 6 == 0)
+            {
+                verticalBar.AddToClassList("large");
+            }
+            else if (i % 3 == 0)
+            {
+                verticalBar.AddToClassList("medium");
+            }
+
+            timelineIndicatorContainer.Add(verticalBar);
+        }
+
+
 
         // Drag manipulator for keyframes
         keyframeDragManipulator = new DragManipulator(null, OnDragKeyframe);
@@ -60,7 +83,8 @@ public class TimelineElement : VisualElement
         List<float> output = new List<float>();
         foreach (var keyframeElement in keyframeElements)
         {
-            //TODO calculate the 
+            float percentageValue = keyframeElement.resolvedStyle.left / mainBar.resolvedStyle.width;
+            //Debug.Log(percentageValue);
         }
 
         return output;
@@ -96,6 +120,7 @@ public class TimelineElement : VisualElement
         var keyframe = new KeyframeElement();
         keyframe.SetSelected(false);
         keyframe.RegisterCallback<MouseDownEvent>(OnMouseDownKeyframe);
+        keyframeElements.Add(keyframe);
         currentlySelectedTrackElement.Add(keyframe);
     }
 
@@ -106,6 +131,7 @@ public class TimelineElement : VisualElement
             return;
         }
 
+        keyframeElements.Remove(currentlySelectedKeyframe);
         currentlySelectedTrackElement.Remove(currentlySelectedKeyframe);
         currentlySelectedKeyframe = null;
     }
@@ -136,8 +162,16 @@ public class TimelineElement : VisualElement
     {
         if (currentlySelectedKeyframe != null)
         {
-            currentlySelectedKeyframe.style.left =
-                keyframeDragManipulator.lastMousePosition.x - currentlySelectedKeyframe.resolvedStyle.width / 2f;
+            var keyframeDesiredPosition = keyframeDragManipulator.lastMousePosition.x - currentlySelectedKeyframe.resolvedStyle.width / 2f;
+            var maxDesiredPosition = mainBar.resolvedStyle.width - currentlySelectedKeyframe.resolvedStyle.width;
+            currentlySelectedKeyframe.style.left = Mathf.Clamp(keyframeDesiredPosition, 0f, maxDesiredPosition);
+
+            GetKeyframeValues();
+
+            if (keyframeDesiredPosition > maxDesiredPosition)
+            {
+                Debug.Log(keyframeDesiredPosition - maxDesiredPosition);
+            }
         }
     }
 }
