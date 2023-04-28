@@ -8,11 +8,10 @@ public class TimelineElement : VisualElement
 {
     private VisualElement mainBar = null;
     private VisualElement timelineIndicatorContainer = null;
-    private TrackElement currentlySelectedTrackElement = null;
-    List<TrackElement> trackElements = new List<TrackElement>();
-    private KeyframeElement currentlySelectedKeyframe = null;
-    private List<KeyframeElement> keyframeElements = new List<KeyframeElement>();
     private DragManipulator keyframeDragManipulator = null;
+    private KeyframeElement currentlySelectedKeyframe = null;
+    private TrackElement currentlySelectedTrackElement = null;
+    private Dictionary<TrackElement, List<KeyframeElement>> trackElements = new Dictionary<TrackElement, List<KeyframeElement>>();
 
     //TODO remove after, only for testing
     private VisualElement buttonContainer = null;
@@ -30,23 +29,31 @@ public class TimelineElement : VisualElement
         timelineIndicatorContainer = new VisualElement();
         timelineIndicatorContainer.AddToClassList("timeline-indicator-container");
         mainBar.Add(timelineIndicatorContainer);
-        for (int i = 0; i < 100; ++i)
+
+        var largeIndex = 6;
+        var mediumIndex = 3;
+        var numUnits = 10;
+        for (int i = 0; i < largeIndex * numUnits + 1; ++i)
         {
+            var verticalBarPadding = new VisualElement();
+            verticalBarPadding.AddToClassList("timeline-indicator-padding");
+            if (i != 0)
+            {
+                timelineIndicatorContainer.Add(verticalBarPadding);                
+            }
+
             var verticalBar = new VisualElement();
             verticalBar.AddToClassList("timeline-indicator");
-            if (i % 6 == 0)
+            if (i % largeIndex == 0)
             {
                 verticalBar.AddToClassList("large");
             }
-            else if (i % 3 == 0)
+            else if (i % mediumIndex == 0)
             {
                 verticalBar.AddToClassList("medium");
             }
-
             timelineIndicatorContainer.Add(verticalBar);
         }
-
-
 
         // Drag manipulator for keyframes
         keyframeDragManipulator = new DragManipulator(null, OnDragKeyframe);
@@ -78,13 +85,20 @@ public class TimelineElement : VisualElement
         buttonContainer.Add(deleteKeyframeButton);
     }
 
-    public List<float> GetKeyframeValues()
+    public List<List<float>> GetKeyframeValues()
     {
-        List<float> output = new List<float>();
-        foreach (var keyframeElement in keyframeElements)
+        var output = new List<List<float>>();
+        foreach (var trackKeyframePair in trackElements)
         {
-            float percentageValue = keyframeElement.resolvedStyle.left / mainBar.resolvedStyle.width;
-            //Debug.Log(percentageValue);
+            var keyframeValues = new List<float>();
+            foreach (var keyframe in trackKeyframePair.Value)
+            {
+                float percentageValue = keyframe.resolvedStyle.left / (mainBar.resolvedStyle.width - keyframe.resolvedStyle.width);
+                keyframeValues.Add(percentageValue);
+            }
+
+            keyframeValues.Sort();
+            output.Add(keyframeValues);
         }
 
         return output;
@@ -95,7 +109,7 @@ public class TimelineElement : VisualElement
         var trackElement = new TrackElement();
         trackElement.SetSelected(false);
         trackElement.RegisterCallback<MouseDownEvent>(OnMouseDownTrack);
-        trackElements.Add(trackElement);
+        trackElements[trackElement] = new List<KeyframeElement>();
         mainBar.Add(trackElement);
     }
 
@@ -106,6 +120,7 @@ public class TimelineElement : VisualElement
             return;
         }
 
+        trackElements.Remove(currentlySelectedTrackElement);
         mainBar.Remove(currentlySelectedTrackElement);
         currentlySelectedTrackElement = null;
     }
@@ -120,7 +135,7 @@ public class TimelineElement : VisualElement
         var keyframe = new KeyframeElement();
         keyframe.SetSelected(false);
         keyframe.RegisterCallback<MouseDownEvent>(OnMouseDownKeyframe);
-        keyframeElements.Add(keyframe);
+        trackElements[currentlySelectedTrackElement].Add(keyframe);
         currentlySelectedTrackElement.Add(keyframe);
     }
 
@@ -131,7 +146,7 @@ public class TimelineElement : VisualElement
             return;
         }
 
-        keyframeElements.Remove(currentlySelectedKeyframe);
+        trackElements[currentlySelectedTrackElement].Remove(currentlySelectedKeyframe);
         currentlySelectedTrackElement.Remove(currentlySelectedKeyframe);
         currentlySelectedKeyframe = null;
     }
@@ -166,11 +181,10 @@ public class TimelineElement : VisualElement
             var maxDesiredPosition = mainBar.resolvedStyle.width - currentlySelectedKeyframe.resolvedStyle.width;
             currentlySelectedKeyframe.style.left = Mathf.Clamp(keyframeDesiredPosition, 0f, maxDesiredPosition);
 
-            GetKeyframeValues();
-
             if (keyframeDesiredPosition > maxDesiredPosition)
             {
-                Debug.Log(keyframeDesiredPosition - maxDesiredPosition);
+                //TODO if we want to do scrolling for larger widths
+                //Debug.Log(keyframeDesiredPosition - maxDesiredPosition);
             }
         }
     }
