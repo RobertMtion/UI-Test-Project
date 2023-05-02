@@ -8,10 +8,10 @@ public class TimelineElement : VisualElement
 {
     private VisualElement mainBar = null;
     private VisualElement timelineIndicatorContainer = null;
-    private DragManipulator keyframeDragManipulator = null;
     private KeyframeElement currentlySelectedKeyframe = null;
     private TrackElement currentlySelectedTrackElement = null;
-    private Dictionary<TrackElement, List<KeyframeElement>> trackElements = new Dictionary<TrackElement, List<KeyframeElement>>();
+    private HashSet<TrackElement> trackElements = new HashSet<TrackElement>();
+    private DragManipulator keyframeDragManipulator = null;
 
     //TODO remove after, only for testing
     private VisualElement buttonContainer = null;
@@ -54,8 +54,7 @@ public class TimelineElement : VisualElement
             }
             timelineIndicatorContainer.Add(verticalBar);
         }
-
-        // Drag manipulator for keyframes
+        
         keyframeDragManipulator = new DragManipulator(null, OnDragKeyframe);
         mainBar.AddManipulator(keyframeDragManipulator);
 
@@ -88,6 +87,8 @@ public class TimelineElement : VisualElement
     public List<List<float>> GetKeyframeValues()
     {
         var output = new List<List<float>>();
+        
+        /*
         foreach (var trackKeyframePair in trackElements)
         {
             var keyframeValues = new List<float>();
@@ -100,6 +101,7 @@ public class TimelineElement : VisualElement
             keyframeValues.Sort();
             output.Add(keyframeValues);
         }
+        */
 
         return output;
     }
@@ -109,8 +111,9 @@ public class TimelineElement : VisualElement
         var trackElement = new TrackElement();
         trackElement.SetSelected(false);
         trackElement.RegisterCallback<MouseDownEvent>(OnMouseDownTrack);
-        trackElements[trackElement] = new List<KeyframeElement>();
+        trackElements.Add(trackElement);
         mainBar.Add(trackElement);
+
     }
 
     private void DeleteSelectedTrackElement()
@@ -135,8 +138,7 @@ public class TimelineElement : VisualElement
         var keyframe = new KeyframeElement();
         keyframe.SetSelected(false);
         keyframe.RegisterCallback<MouseDownEvent>(OnMouseDownKeyframe);
-        trackElements[currentlySelectedTrackElement].Add(keyframe);
-        currentlySelectedTrackElement.Add(keyframe);
+        currentlySelectedTrackElement.AddKeyframe(keyframe);
     }
 
     private void DeleteSelectedKeyframeElement()
@@ -146,7 +148,8 @@ public class TimelineElement : VisualElement
             return;
         }
 
-        trackElements[currentlySelectedTrackElement].Remove(currentlySelectedKeyframe);
+        //TODO this logic needs to be revisited
+        currentlySelectedTrackElement.RemoveKeyframe(currentlySelectedKeyframe);
         currentlySelectedTrackElement.Remove(currentlySelectedKeyframe);
         currentlySelectedKeyframe = null;
     }
@@ -158,7 +161,7 @@ public class TimelineElement : VisualElement
             currentlySelectedTrackElement.SetSelected(false);
         }
 
-        currentlySelectedTrackElement = evt.currentTarget as TrackElement;
+        currentlySelectedTrackElement = evt.currentTarget as TrackElement;;
         currentlySelectedTrackElement.SetSelected(true);
     }
 
@@ -172,20 +175,25 @@ public class TimelineElement : VisualElement
         currentlySelectedKeyframe = evt.currentTarget as KeyframeElement;
         currentlySelectedKeyframe.SetSelected(true);
     }
-
+    
     private void OnDragKeyframe()
     {
-        if (currentlySelectedKeyframe != null)
+        if (currentlySelectedKeyframe == null || currentlySelectedTrackElement == null)
         {
-            var keyframeDesiredPosition = keyframeDragManipulator.lastMousePosition.x - currentlySelectedKeyframe.resolvedStyle.width / 2f;
-            var maxDesiredPosition = mainBar.resolvedStyle.width - currentlySelectedKeyframe.resolvedStyle.width;
-            currentlySelectedKeyframe.style.left = Mathf.Clamp(keyframeDesiredPosition, 0f, maxDesiredPosition);
+            return;
+        }
+        
+        var keyframeDesiredPosition = keyframeDragManipulator.lastMousePosition.x 
+                                      - currentlySelectedTrackElement.HeaderContainerWidth 
+                                      - currentlySelectedKeyframe.resolvedStyle.width / 2f;
+        
+        var maxDesiredPosition = currentlySelectedTrackElement.KeyframeContainerWidth - currentlySelectedKeyframe.resolvedStyle.width;
+        currentlySelectedKeyframe.style.left = Mathf.Clamp(keyframeDesiredPosition, 0f, maxDesiredPosition);
 
-            if (keyframeDesiredPosition > maxDesiredPosition)
-            {
-                //TODO if we want to do scrolling for larger widths
-                //Debug.Log(keyframeDesiredPosition - maxDesiredPosition);
-            }
+        if (keyframeDesiredPosition > maxDesiredPosition)
+        {
+            //TODO if we want to do scrolling for larger widths
+            //Debug.Log(keyframeDesiredPosition - maxDesiredPosition);
         }
     }
 }

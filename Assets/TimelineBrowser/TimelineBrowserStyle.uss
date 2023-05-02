@@ -1,0 +1,50 @@
+.timeline-browser-element {
+	background-color: rgb(64, 64, 64);
+}
+
+.timeline-browser-element .header-row {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	align-content: flex-start;
+
+}
+
+.timeline-browser-element .header-row .create-timeline-button {
+	width: 20px;
+	height: 20px;
+}
+
+.timeline-browser-item-element {
+	width: 200px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
+	background-color: rgb(128, 128, 128);
+}
+
+.timeline-browser-item-element .name-header {
+	color: rgb(255, 255, 255);
+}
+
+.timeline-browser-item-element .edit-button {
+	height: 30px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	background-color: rgb(0, 0, 0);
+	color: rgb(255, 255, 255);
+	/*-unity-font-style: bold;*/
+}
+
+.timeline-browser-item-element .edit-button:active {
+	background-color: rgb(32, 32, 32);
+}
+
+.timeline-browser-item-element .preview-button {
+
+}
+
+.timeline-browser-item-element .delete-button {
+
+}
