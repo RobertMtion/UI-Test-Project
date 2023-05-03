@@ -10,9 +10,33 @@
 
 }
 
+.timeline-browser-element .header-row .header-title-container {
+	background-color: rgb(128, 128, 128);
+	font-size: 16px;
+	-unity-font-style: bold;
+}
+
 .timeline-browser-element .header-row .create-timeline-button {
 	width: 20px;
 	height: 20px;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.timeline-browser-element .timeline-elements-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap
+	align-items: flex-start;
+	padding-left: auto;
+	padding-right: auto;
+}
+
+.timeline-browser-element .timeline-elements-container .timeline-browser-item-element {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 .timeline-browser-item-element {
@@ -34,7 +58,6 @@
 	padding-bottom: 3px;
 	background-color: rgb(0, 0, 0);
 	color: rgb(255, 255, 255);
-	/*-unity-font-style: bold;*/
 }
 
 .timeline-browser-item-element .edit-button:active {
